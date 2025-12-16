@@ -10,7 +10,7 @@ const getList = async () => {
   })
     .then((response) => response.json())
     .then((data) => {
-      data.passageiros.forEach(item => insertList(item.id,item.nome, item.cpf, item.flight))
+      data.passageiros.forEach(item => insertList(item.id,item.nome, item.cpf, item.birthdate, item.flight))
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -30,11 +30,12 @@ getList()
   Função para colocar um item na lista do servidor via requisição POST
   --------------------------------------------------------------------------------------
 */
-const postItem = async (inputPassageiro, inputCPF, inputFlight) => {
+const postItem = async (inputPassageiro, inputCPF, inputBirthDate, inputFlight) => {
   
   var data={
     nome: inputPassageiro,
     cpf: inputCPF,
+    birthdate: inputBirthDate,
     flight: inputFlight
   };
 
@@ -49,7 +50,7 @@ const postItem = async (inputPassageiro, inputCPF, inputFlight) => {
     .then((response) => response.json())
     .then((data) => {
       console.log(data.id);
-      insertList(data.id,inputPassageiro, inputCPF, inputFlight);
+      insertList(data.id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
       alert("Passageiro adicionado!");
     })
     .catch((error) => {
@@ -90,11 +91,12 @@ const insertButton2 = (parent) => {
   Função para editar um item na lista do servidor via requisição PUT
   --------------------------------------------------------------------------------------
 */
-const putItem = async (id, inputPassageiro, inputCPF, inputFlight) => {
+const putItem = async (id, inputPassageiro, inputCPF, inputBirthDate,inputFlight) => {
 
   var data={
     id: id,
     nome: inputPassageiro,
+    birthdate: inputBirthDate,
     cpf: inputCPF,
     flight: inputFlight
   };
@@ -110,7 +112,7 @@ const putItem = async (id, inputPassageiro, inputCPF, inputFlight) => {
     .then((response) => response.json())
     .then((data) => {
       console.log(data.id);
-      updateList(data.id,inputPassageiro, inputCPF, inputFlight);
+      updateList(data.id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -123,7 +125,7 @@ const putItem = async (id, inputPassageiro, inputCPF, inputFlight) => {
   Função para atualizar um item da lista apos a edicao
   --------------------------------------------------------------------------------------
 */
-const updateList = (id, namePassageiro, cpf, flight) => {
+const updateList = (id, namePassageiro, cpf, birthdate, flight) => {
 
   var table = document.getElementById('myTable');
   var line = 0;
@@ -134,7 +136,8 @@ const updateList = (id, namePassageiro, cpf, flight) => {
     if (rowId==id){
       row.cells[0].innerHTML=namePassageiro;
       row.cells[1].innerHTML=cpf;
-      row.cells[2].innerHTML=flight;
+      row.cells[2].innerHTML=birthdate;
+      row.cells[3].innerHTML=flight;
     }
     
   }
@@ -142,6 +145,7 @@ const updateList = (id, namePassageiro, cpf, flight) => {
   document.getElementById("ProcessBtn").innerHTML= "Adicionar"
   document.getElementById("newPassageiro").value = "";
   document.getElementById("newCPF").value = "";
+  document.getElementById("newBirthDate").value = "";
   document.getElementById("newFlight").value = "";
   alert("Passageiro editado!");
 }
@@ -162,10 +166,12 @@ const updateElement = () => {
       console.log('Row ID:', rowId);
       const nome = div.getElementsByTagName('td')[0].innerHTML
       const cpf = div.getElementsByTagName('td')[1].innerHTML
-      const flight = div.getElementsByTagName('td')[2].innerHTML
+      const birthdate = div.getElementsByTagName('td')[2].innerHTML
+      const flight = div.getElementsByTagName('td')[3].innerHTML
       document.getElementById("id").value = rowId;
       document.getElementById("newPassageiro").value = nome;
       document.getElementById("newCPF").value = cpf;
+      document.getElementById("newBirthDate").value = birthdate;
       document.getElementById("newFlight").value = flight;
       document.getElementById("ProcessBtn").innerHTML= "Editar";
     }
@@ -223,6 +229,7 @@ const ProcessItem = () => {
   var id = document.getElementById("id").value;
   var inputPassageiro = document.getElementById("newPassageiro").value;
   var inputCPF = document.getElementById("newCPF").value;
+  var inputBirthDate = document.getElementById("newBirthDate").value;
   var inputFlight = document.getElementById("newFlight").value;
 
   if (document.getElementById("ProcessBtn").innerHTML=== "Editar")
@@ -231,10 +238,12 @@ const ProcessItem = () => {
       alert("Escreva o nome de um passageiro!")
     } else if (inputCPF === '') {
       alert("Entre com o CPF");
+    } else if (inputBirthDate === '') {
+      alert("Entre com a data de nascimento!");
     } else if (inputFlight === '') {
       alert("Entre com o Voo!");
     } else {
-      putItem(id,inputPassageiro, inputCPF, inputFlight);
+      putItem(id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
     }
   }
   else{
@@ -242,10 +251,12 @@ const ProcessItem = () => {
       alert("Escreva o nome de um passageiro!")
     } else if (inputCPF === '') {
       alert("Entre com o CPF");
+    } else if (inputBirthDate === '') {
+      alert("Entre com a data de nascimento!");
     } else if (inputFlight === '') {
       alert("Entre com o Voo!");
     } else {
-      postItem(inputPassageiro, inputCPF, inputFlight);
+      postItem(inputPassageiro, inputCPF, inputBirthDate, inputFlight);
     }
   }
 
@@ -256,8 +267,8 @@ const ProcessItem = () => {
   Função para inserir items na lista apresentada
   --------------------------------------------------------------------------------------
 */
-const insertList = (id, namePassageiro, cpf, flight) => {
-  var item = [id,namePassageiro, cpf, flight]
+const insertList = (id, namePassageiro, cpf, birthdate, flight) => {
+  var item = [id,namePassageiro, cpf, birthdate, flight]
   var table = document.getElementById('myTable');
   var row = table.insertRow();
 
@@ -275,6 +286,7 @@ const insertList = (id, namePassageiro, cpf, flight) => {
   insertButton2(row.insertCell(-1))
   document.getElementById("newPassageiro").value = "";
   document.getElementById("newCPF").value = "";
+  document.getElementById("newBirthDate").value = "";
   document.getElementById("newFlight").value = "";
 
   removeElement()

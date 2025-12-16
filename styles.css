@@ -65,6 +65,15 @@ header {
     font-size: 16px;
 }
 
+
+#newBirthDate {
+    margin: 0;
+    border: 1px solid rgb(35, 32, 24);
+    width: 15%;
+    padding: 10px;
+    font-size: 16px;
+}
+
 #newFlight {
     margin: 0;
     border: 1px solid rgb(35, 32, 24);
