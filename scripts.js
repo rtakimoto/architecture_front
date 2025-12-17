@@ -249,11 +249,11 @@ const ProcessItem = () => {
     bValidado = false;
   } 
 
+  //valida CPF
   if (bValidado && verificarCPF(inputCPF)===false) {
     alert("CPF inválido! O CPF deve conter apenas números.");
     bValidado = false;
   }
-  console.log(bValidado);
 
   // Valida data de nascimento
   if (bValidado && isValidFormat(inputBirthDate)===false) {
@@ -267,6 +267,13 @@ const ProcessItem = () => {
   }
 
   var BirthDateTime = inputBirthDate.concat(time);
+
+  //validacao adicional com API externa
+  if (ValidaPassageiro(inputPassageiro,inputCPF, inputBirthDate)===false){
+    bValidado = false;
+  }
+
+  console.log(bValidado);
 
   if (document.getElementById("ProcessBtn").innerHTML=== "Editar")
   {
@@ -376,4 +383,26 @@ function verificarCPF(strCpf) {
         return false;
     }
     return true;
+}
+
+function ValidaPassageiro(strPassageiro, strCpf, birthdate) {
+  const url = 'https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token=MpYLNaIH8agztz_PuGF0wuAX3AhU4D8souCpTdCk&cpf=' + strCpf + '&birthdate=' + birthdate;
+  //https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token=MpYLNaIH8agztz_PuGF0wuAX3AhU4D8souCpTdCk&cpf=03342352868&birthdate=1935-12-04
+
+  fetch(url, {
+  method: 'post',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(data)
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data);
+  
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    alert("Erro ao chamar api externa!");
+  });
 }
