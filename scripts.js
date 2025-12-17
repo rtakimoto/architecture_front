@@ -269,9 +269,9 @@ const ProcessItem = () => {
   var BirthDateTime = inputBirthDate.concat(time);
 
   //validacao adicional com API externa
-  if (ValidaPassageiro(inputPassageiro,inputCPF, inputBirthDate)===false){
-    bValidado = false;
-  }
+  //if (ValidaPassageiro(inputPassageiro,inputCPF, inputBirthDate)===false){
+  //  bValidado = false;
+  //}
 
   console.log(bValidado);
 
@@ -385,24 +385,39 @@ function verificarCPF(strCpf) {
     return true;
 }
 
-function ValidaPassageiro(strPassageiro, strCpf, birthdate) {
+/*
+const ValidaPassageiro = async (strPassageiro, strCpf, birthdate) => {
+  
   const url = 'https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token=MpYLNaIH8agztz_PuGF0wuAX3AhU4D8souCpTdCk&cpf=' + strCpf + '&birthdate=' + birthdate;
   //https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token=MpYLNaIH8agztz_PuGF0wuAX3AhU4D8souCpTdCk&cpf=03342352868&birthdate=1935-12-04
 
+  // POST request using fetch()
   fetch(url, {
-  method: 'post',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(data)
+      
+      // Adding method type
+      method: "POST",
+      // Adding body or contents to send
+      body: JSON.stringify(),
+      credentials: 'include', 
+      // Adding headers to the request
+      headers: {
+          "Content-type": "application/json;"
+      }
   })
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(data);
-  
+
+  // Converting to JSON
+  .then(response => response.json())
+
+  // Displaying results to console
+
+  .then((json) => {
+    //console.log(data.nome);
+    //console.log(data.situacao_cadastral);
+    console.log(json);
   })
   .catch((error) => {
     console.error('Error:', error);
     alert("Erro ao chamar api externa!");
   });
-}
+  
+}*/
