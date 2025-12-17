@@ -112,7 +112,8 @@ const putItem = async (id, inputPassageiro, inputCPF, inputBirthDate,inputFlight
     .then((response) => response.json())
     .then((data) => {
       console.log(data.id);
-      updateList(data.id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
+      console.log(inputBirthDate.substring(0, 10));
+      updateList(data.id,inputPassageiro, inputCPF, inputBirthDate.substring(0, 10), inputFlight);
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -231,32 +232,51 @@ const ProcessItem = () => {
   var inputCPF = document.getElementById("newCPF").value;
   var inputBirthDate = document.getElementById("newBirthDate").value;
   var inputFlight = document.getElementById("newFlight").value;
+  var bValidado = true;
+  var time = "T12:00:00";
+
+  if (inputPassageiro === '') {
+    alert("Escreva o nome de um passageiro!")
+    bValidado = false;
+  } else if (inputCPF === '') {
+    alert("Entre com o CPF");
+    bValidado = false;
+  } else if (inputBirthDate === '') {
+    alert("Entre com a data de nascimento!");
+    bValidado = false;
+  } else if (inputFlight === '') {
+    alert("Entre com o Voo!");
+    bValidado = false;
+  } 
+
+  if (bValidado && verificarCPF(inputCPF)===false) {
+    alert("CPF inválido! O CPF deve conter apenas números.");
+    bValidado = false;
+  }
+  console.log(bValidado);
+
+  // Valida data de nascimento
+  if (bValidado && isValidFormat(inputBirthDate)===false) {
+    alert("O formato da data está incorreto! Use AAAA-MM-DD");
+    bValidado = false;
+  }
+
+  if (bValidado && isValidDate(inputBirthDate)===false) {
+    alert("Número de data inválido!");
+    bValidado = false;
+  }
+
+  var BirthDateTime = inputBirthDate.concat(time);
 
   if (document.getElementById("ProcessBtn").innerHTML=== "Editar")
   {
-    if (inputPassageiro === '') {
-      alert("Escreva o nome de um passageiro!")
-    } else if (inputCPF === '') {
-      alert("Entre com o CPF");
-    } else if (inputBirthDate === '') {
-      alert("Entre com a data de nascimento!");
-    } else if (inputFlight === '') {
-      alert("Entre com o Voo!");
-    } else {
-      putItem(id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
+    if (bValidado){
+      putItem(id,inputPassageiro, inputCPF, BirthDateTime, inputFlight);
     }
   }
   else{
-    if (inputPassageiro === '') {
-      alert("Escreva o nome de um passageiro!")
-    } else if (inputCPF === '') {
-      alert("Entre com o CPF");
-    } else if (inputBirthDate === '') {
-      alert("Entre com a data de nascimento!");
-    } else if (inputFlight === '') {
-      alert("Entre com o Voo!");
-    } else {
-      postItem(inputPassageiro, inputCPF, inputBirthDate, inputFlight);
+    if (bValidado){
+      postItem(inputPassageiro, inputCPF, BirthDateTime, inputFlight);
     }
   }
 
@@ -275,11 +295,21 @@ const insertList = (id, namePassageiro, cpf, birthdate, flight) => {
   for (var i = 0; i < item.length; i++) {
     if (i===0){
       row.id=item[0];
-      console.log(item[0]);
     }
     else{
       var cel = row.insertCell(i-1);
-      cel.textContent = item[i];
+      console.log(item[i], i);
+      if (i===3){
+        // Extract components
+        const date = new Date(item[i]);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;    // Months are 0-based, so add 1
+        const day = date.getDate();
+        cel.textContent= year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+      }
+      else{
+        cel.textContent = item[i];
+      }
     }
   }
   insertButton(row.insertCell(-1))
@@ -291,4 +321,59 @@ const insertList = (id, namePassageiro, cpf, birthdate, flight) => {
 
   removeElement()
   updateElement()
+}
+
+function isValidFormat(dateString) {
+  // Check format using regex: YYYY-MM-DD
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(dateString)) {
+    return false; // Format doesn't match
+  }
+}
+
+function isValidDate(dateString) {
+  const date = new Date(dateString);
+  return date.isValid(dateString);
+}
+
+
+Date.prototype.isValid = function (dateString) {
+    // Compare the original date string with the date object
+    return this.getTime() === this.getTime() && dateString === this.toISOString().slice(0, 10);
+};
+
+function verificarCPF(strCpf) {
+    if (!/[0-9]{11}/.test(strCpf)) return false;
+    if (strCpf === "00000000000") return false;
+    var soma = 0;
+
+    for (var i = 1; i <= 9; i++) {
+        soma += parseInt(strCpf.substring(i - 1, i)) * (11 - i);
+    }
+    var resto = soma % 11;
+
+    if (resto === 10 || resto === 11 || resto < 2) {
+        resto = 0;
+    } else {
+        resto = 11 - resto;
+    }
+    if (resto !== parseInt(strCpf.substring(9, 10))) {
+        return false;
+    }
+
+    soma = 0;
+
+    for (var i = 1; i <= 10; i++) {
+        soma += parseInt(strCpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = soma % 11;
+    if (resto === 10 || resto === 11 || resto < 2) {
+        resto = 0;
+    } else {
+        resto = 11 - resto;
+    }
+    if (resto !== parseInt(strCpf.substring(10, 11))) {
+        return false;
+    }
+    return true;
 }
