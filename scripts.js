@@ -38,25 +38,75 @@ const postItem = async (inputPassageiro, inputCPF, inputBirthDate, inputFlight) 
     birthdate: inputBirthDate,
     flight: inputFlight
   };
+  const situacao_cadastral = "REGULAR";
 
-  const url = 'http://127.0.0.1:5000/passageiro';
-  fetch(url, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
+  const CPF_url = 'http://localhost:5000/external-data?cpf=' + inputCPF + '&birthdate=' + inputBirthDate;
+ 
+  // GET request using fetch()
+  fetch(CPF_url, {
+      
+      // Adding method type
+      method: "GET",
+      // Adding body or contents to send
+      body: JSON.stringify(),
+      // Adding headers to the request
+      headers: {
+          "Content-type": "application/json;"
+      }
   })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.id);
-      insertList(data.id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
-      alert("Passageiro adicionado!");
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      alert("Erro ao adicionar o passageiro!");
-    });
+
+  // Converting to JSON
+  .then(response => response.json())
+
+  // Displaying results to console
+
+  .then((json) => {
+    console.log(json);
+    var code=json.code;
+    var count=json.count;
+    var nome=json.nome;
+    var situacao=json.situacao;
+    console.log(code);
+    console.log(count);
+    console.log(nome);
+    console.log(situacao);
+    if (count === 0) {
+      alert("Informação de passageiro não consta na receita federal!");
+    }else {
+      
+      if (equalsIgnoreCase(nome, inputPassageiro) !== true){
+        alert("CPF informado não pertence ao nome do passageiro informado!");
+      }
+      else if (equalsIgnoreCase(situacao, situacao_cadastral) !== true) {
+        alert("Situação do passageiro irregular na receita federal!");
+      }
+      else {
+        // Adiciona passageiro
+        const url = 'http://127.0.0.1:5000/passageiro';
+        fetch(url, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.id);
+            insertList(data.id,inputPassageiro, inputCPF, inputBirthDate, inputFlight);
+            alert("Passageiro adicionado!");
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            alert("Erro ao adicionar o passageiro!");
+          });      
+      }
+    } 
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    alert("Erro ao chamar api externa!");
+  });
 }
 
 
@@ -100,25 +150,76 @@ const putItem = async (id, inputPassageiro, inputCPF, inputBirthDate,inputFlight
     cpf: inputCPF,
     flight: inputFlight
   };
+  const situacao_cadastral = "REGULAR";
 
-  const url = 'http://127.0.0.1:5000/passageiro';
-  fetch(url, {
-    method: 'put',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
+  const CPF_url = 'http://localhost:5000/external-data?cpf=' + inputCPF + '&birthdate=' + inputBirthDate;
+ 
+  // GET request using fetch()
+  fetch(CPF_url, {
+      
+      // Adding method type
+      method: "GET",
+      // Adding body or contents to send
+      body: JSON.stringify(),
+      // Adding headers to the request
+      headers: {
+          "Content-type": "application/json;"
+      }
   })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.id);
-      console.log(inputBirthDate.substring(0, 10));
-      updateList(data.id,inputPassageiro, inputCPF, inputBirthDate.substring(0, 10), inputFlight);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      alert("Erro ao editar passageiro!");
-    });
+
+  // Converting to JSON
+  .then(response => response.json())
+
+  // Displaying results to console
+
+  .then((json) => {
+    console.log(json);
+    var code=json.code;
+    var count=json.count;
+    var nome=json.nome;
+    var situacao=json.situacao;
+    console.log(code);
+    console.log(count);
+    console.log(nome);
+    console.log(situacao);
+    if (count === 0) {
+      alert("Informação de passageiro não consta na receita federal!");
+    }else {
+      
+      if (equalsIgnoreCase(nome, inputPassageiro) !== true){
+        alert("CPF informado não pertence ao nome do passageiro informado!");
+      }
+      else if (equalsIgnoreCase(situacao, situacao_cadastral) !== true) {
+        alert("Situação do passageiro irregular na receita federal!");
+      }
+      else {
+        //inicio edita passageiro
+        const url = 'http://127.0.0.1:5000/passageiro';
+        fetch(url, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.id);
+            console.log(inputBirthDate.substring(0, 10));
+            updateList(data.id,inputPassageiro, inputCPF, inputBirthDate.substring(0, 10), inputFlight);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            alert("Erro ao editar passageiro!");
+          });      
+      }            
+
+    } 
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    alert("Erro ao chamar api externa!");
+  });  
 }
 
 /*
@@ -236,7 +337,7 @@ const ProcessItem = () => {
   var time = "T12:00:00";
 
   if (inputPassageiro === '') {
-    alert("Escreva o nome de um passageiro!")
+    alert("Escreva o nome de um passageiro!");
     bValidado = false;
   } else if (inputCPF === '') {
     alert("Entre com o CPF");
@@ -251,7 +352,7 @@ const ProcessItem = () => {
 
   //valida CPF
   if (bValidado && verificarCPF(inputCPF)===false) {
-    alert("CPF inválido! O CPF deve conter apenas números.");
+    alert("CPF inválido! Entrar somente com os números válidos do CPF");
     bValidado = false;
   }
 
@@ -268,8 +369,8 @@ const ProcessItem = () => {
 
   var BirthDateTime = inputBirthDate.concat(time);
 
-  //validacao adicional com API externa
-  //if (ValidaPassageiro(inputPassageiro,inputCPF, inputBirthDate)===false){
+  //validacao adicional de API externa do back
+  //if (bValidado && ValidaPassageiro(inputPassageiro,inputCPF, inputBirthDate)===false){
   //  bValidado = false;
   //}
 
@@ -385,39 +486,14 @@ function verificarCPF(strCpf) {
     return true;
 }
 
-/*
-const ValidaPassageiro = async (strPassageiro, strCpf, birthdate) => {
-  
-  const url = 'https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token=MpYLNaIH8agztz_PuGF0wuAX3AhU4D8souCpTdCk&cpf=' + strCpf + '&birthdate=' + birthdate;
-  //https://api.infosimples.com/api/v2/consultas/receita-federal/cpf?token=MpYLNaIH8agztz_PuGF0wuAX3AhU4D8souCpTdCk&cpf=03342352868&birthdate=1935-12-04
+//Compara nomes ignorando maiusculo e minusculo
+function equalsIgnoreCase(str1, str2) {
 
-  // POST request using fetch()
-  fetch(url, {
-      
-      // Adding method type
-      method: "POST",
-      // Adding body or contents to send
-      body: JSON.stringify(),
-      credentials: 'include', 
-      // Adding headers to the request
-      headers: {
-          "Content-type": "application/json;"
-      }
-  })
+    // Validate inputs
+    if (typeof str1 !== 'string' || typeof str2 !== 'string') {
+        return false; // Non-string inputs are not equal
+    }
 
-  // Converting to JSON
-  .then(response => response.json())
-
-  // Displaying results to console
-
-  .then((json) => {
-    //console.log(data.nome);
-    //console.log(data.situacao_cadastral);
-    console.log(json);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-    alert("Erro ao chamar api externa!");
-  });
-  
-}*/
+    // Compare after converting both to lowercase
+    return str1.toLowerCase() === str2.toLowerCase();
+}
