@@ -455,12 +455,15 @@ function verificarCPF(strCpf) {
     if (strCpf === "00000000000") return false;
     var soma = 0;
 
+    console.log("Início validação CPF");
     for (var i = 1; i <= 9; i++) {
         soma += parseInt(strCpf.substring(i - 1, i)) * (11 - i);
     }
+    console.log(soma);
     var resto = soma % 11;
+    console.log(resto);
 
-    if (resto === 10 || resto === 11 || resto < 2) {
+    if (resto < 2) {
         resto = 0;
     } else {
         resto = 11 - resto;
@@ -471,11 +474,14 @@ function verificarCPF(strCpf) {
 
     soma = 0;
 
+    console.log("Segundo digito - validação CPF");
     for (var i = 1; i <= 10; i++) {
         soma += parseInt(strCpf.substring(i - 1, i)) * (12 - i);
     }
+    console.log(soma);
     resto = soma % 11;
-    if (resto === 10 || resto === 11 || resto < 2) {
+    console.log(resto);
+    if (resto < 2) {
         resto = 0;
     } else {
         resto = 11 - resto;
